@@ -1,0 +1,135 @@
+{
+  "messages": [
+    {
+      "type": "msg",
+      "time": 1762218987.0771055,
+      "attachments": [
+        "61e5e90f-fd1a-4eb6-9a96-8c266bfec081"
+      ],
+      "raw_time": false,
+      "body": "Write a code cell that uses Open Library's search endpoint to look up books based on a user's query and returns a response listing identified books, with these fields for each book: key, title, author_name, first_publish_year, isbn, cover_id, edition_count, language, subject. Use a variable called limit, set to 5, to specify the number of returned results. Print the results. Use the Open Library API documentation in the attached file.",
+      "id": "b4b51618-8c29-4a91-99d2-27db907fb45b",
+      "sender": "324be302f5aa47239fe942d8a456b8bd"
+    },
+    {
+      "raw_time": false,
+      "body": "Here\u2019s a Python code cell you can run in JupyterLab to query the Open Library Search API and print a list of books based on a user\u2019s search query:\n\n```python\nimport requests\n\n# User-defined query and number of results to return\nquery = input(\"Enter a search query: \").strip()\nlimit = 5\n\n# Define the fields to retrieve\nfields = \"key,title,author_name,first_publish_year,isbn,cover_i,edition_count,language,subject\"\n\n# Perform the API request\nresponse = requests.get(\n    \"https://openlibrary.org/search.json\",\n    params={\n        \"q\": query,\n        \"fields\": fields,\n        \"limit\": limit\n    }\n)\n\n# Parse JSON response\ndata = response.json()\n\n# Display results\ndocs = data.get(\"docs\", [])\nprint(f\"\\nFound {len(docs)} results (showing up to {limit}):\\n\")\n\nfor book in docs:\n    print({\n        \"key\": book.get(\"key\"),\n        \"title\": book.get(\"title\"),\n        \"author_name\": book.get(\"author_name\"),\n        \"first_publish_year\": book.get(\"first_publish_year\"),\n        \"isbn\": book.get(\"isbn\"),\n        \"cover_id\": book.get(\"cover_i\"),\n        \"edition_count\": book.get(\"edition_count\"),\n        \"language\": book.get(\"language\"),\n        \"subject\": book.get(\"subject\")\n    })\n    print(\"-\" * 80)\n```\n\n**How it works:**\n- Prompts the user for a search query.\n- Uses the Open Library Search API (`https://openlibrary.org/search.json`).\n- Requests only the specified fields for compact results.\n- Prints up to 5 book entries with relevant metadata.",
+      "sender": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "id": "b8cc70ed-2fb3-456b-9e08-febbc2dacea9",
+      "time": 1762218987.331205,
+      "type": "msg",
+      "mentions": []
+    },
+    {
+      "type": "msg",
+      "time": 1762219194.66975,
+      "id": "c52d400e-a5fe-4cea-9542-ba54200d391b",
+      "raw_time": false,
+      "sender": "324be302f5aa47239fe942d8a456b8bd",
+      "body": "Wrap the code above in a function search_books, with good docstring.\n\nInput arguments: query and limit (with default value of 10)\nOutput: JSON string with:\nnum_found: total results\nbooks: list of dicts with title, authors, first_publish_year, key, edition_count"
+    },
+    {
+      "raw_time": false,
+      "body": "Here\u2019s an updated version of the code wrapped in a function `search_books`, complete with a descriptive docstring and returning a JSON-formatted string containing the specified fields:  \n\n```python\nimport requests\nimport json\n\ndef search_books(query: str, limit: int = 10) -> str:\n    \"\"\"\n    Search for books using the Open Library Search API.\n\n    Parameters\n    ----------\n    query : str\n        The keyword or phrase to search for (e.g., title, author, or subject).\n    limit : int, optional\n        The maximum number of book results to return (default is 10).\n\n    Returns\n    -------\n    str\n        A JSON-formatted string containing:\n        - num_found: the total number of matching results from Open Library\n        - books: a list of dictionaries with the following fields for each book:\n            * title\n            * authors\n            * first_publish_year\n            * key\n            * edition_count\n    \"\"\"\n    fields = \"key,title,author_name,first_publish_year,edition_count\"\n\n    response = requests.get(\n        \"https://openlibrary.org/search.json\",\n        params={\n            \"q\": query,\n            \"fields\": fields,\n            \"limit\": limit\n        }\n    )\n    response.raise_for_status()\n    data = response.json()\n\n    books = []\n    for doc in data.get(\"docs\", []):\n        books.append({\n            \"title\": doc.get(\"title\"),\n            \"authors\": doc.get(\"author_name\"),\n            \"first_publish_year\": doc.get(\"first_publish_year\"),\n            \"key\": doc.get(\"key\"),\n            \"edition_count\": doc.get(\"edition_count\")\n        })\n\n    result = {\n        \"num_found\": data.get(\"numFound\", 0),\n        \"books\": books\n    }\n\n    return json.dumps(result, indent=2)\n\n# Example usage:\n# print(search_books(\"Pride and Prejudice\", limit=5))\n```  \n\n\u2705 **What this does:**  \n- Queries the Open Library API for books matching `query`.  \n- Limits the results to the user-specified number (`limit`).  \n- Returns a JSON-formatted string with the total number of matches and a simplified list of book info fields.",
+      "sender": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "type": "msg",
+      "mentions": [],
+      "time": 1762219194.7105653,
+      "id": "58f39218-d285-44f6-b7d6-e2275f36600e"
+    },
+    {
+      "raw_time": false,
+      "time": 1762219423.389055,
+      "id": "a5bbea8e-5695-42c2-8f16-8fa872546854",
+      "sender": "324be302f5aa47239fe942d8a456b8bd",
+      "body": "Use this aisuite example to create a simple chat handler function chat_with_tools:\n\ninput: user_message\noutput: response.choices[0].message.content",
+      "type": "msg",
+      "attachments": [
+        "7fd549c4-1aae-4d97-b233-c3979634244b"
+      ]
+    },
+    {
+      "body": "Here\u2019s a code cell that defines the `chat_with_tools` function using the `aisuite` client and your existing setup:  \n\n```python\nimport aisuite as ai\n\n# Initialize the AISuite client\nclient = ai.Client()\n\ndef chat_with_tools(user_message: str) -> str:\n    \"\"\"\n    Handle a user chat message and return the AI-generated response\n    using tool-assisted reasoning.\n\n    Parameters\n    ----------\n    user_message : str\n        The text message or query from the user.\n\n    Returns\n    -------\n    str\n        The assistant\u2019s message content from the AI model.\n    \"\"\"\n    messages = [\n        {\n            \"role\": \"user\",\n            \"content\": user_message\n        }\n    ]\n\n    # Automatic tool execution with max_turns specified\n    response = client.chat.completions.create(\n        model=\"openai:gpt-4.1-mini\",\n        messages=messages,\n        tools=[search_books],  # Add function tools here\n        max_turns=3            # Maximum number of back-and-forth tool calls\n    )\n\n    return response.choices[0].message.content\n\n# Example usage:\n# reply = chat_with_tools(\"Suggest some books about artificial intelligence.\")\n# print(reply)\n```\n\n\u2705 **Explanation:**\n- Creates a chat client using `aisuite`.  \n- Accepts `user_message` from the user.  \n- Uses the chat-completion API with your registered tool (`search_books`).  \n- Returns only the model\u2019s text output: `response.choices[0].message.content`.  \n\nYou can expand this later to include additional tools (like `get_book_details`) by adding them to the `tools` list.",
+      "type": "msg",
+      "id": "5a0af23e-1711-40c4-ad80-2801a67c8a6c",
+      "time": 1762219428.1106932,
+      "sender": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "mentions": [],
+      "raw_time": false
+    },
+    {
+      "raw_time": false,
+      "type": "msg",
+      "sender": "324be302f5aa47239fe942d8a456b8bd",
+      "body": "Write a code cell that uses Open Library's works endpoint to retrieve information about a book, based on the work's key that has this format: \"/works/{work_id}\". The result should include: title, description, subjects (limit to 10), first_sentence, covers (limit to 3). Print the returned results. Use the documentation for Open Library's API provided above.",
+      "id": "cb911163-6d53-400a-b132-b855aef40fdc",
+      "time": 1762219657.0453598
+    },
+    {
+      "raw_time": false,
+      "body": "Here\u2019s a code cell that retrieves detailed information about a specific Open Library work using its key (e.g. `\"/works/OL45883W\"`) from the **Open Library Works API**:  \n\n```python\nimport requests\nimport json\n\ndef get_work_details(work_key: str) -> dict:\n    \"\"\"\n    Retrieve detailed information about a book from the Open Library Works API.\n\n    Parameters\n    ----------\n    work_key : str\n        The Open Library work key, e.g. \"/works/OL45883W\".\n\n    Returns\n    -------\n    dict\n        A dictionary containing:\n        - title\n        - description (string if available)\n        - subjects (list of up to 10 strings)\n        - first_sentence (string if available)\n        - covers (list of up to 3 cover image IDs)\n    \"\"\"\n    # Ensure the work key starts with '/works/'\n    if not work_key.startswith(\"/works/\"):\n        raise ValueError(\"Invalid work key format. Expected format: '/works/{work_id}'\")\n\n    url = f\"https://openlibrary.org{work_key}.json\"\n    response = requests.get(url)\n    response.raise_for_status()\n    data = response.json()\n\n    # Normalize optional fields\n    title = data.get(\"title\")\n    covers = data.get(\"covers\", [])[:3]\n    subjects = data.get(\"subjects\", [])[:10]\n\n    # Description and first_sentence can be nested or different types\n    description = None\n    if isinstance(data.get(\"description\"), dict):\n        description = data[\"description\"].get(\"value\")\n    elif isinstance(data.get(\"description\"), str):\n        description = data[\"description\"]\n\n    first_sentence = None\n    if isinstance(data.get(\"first_sentence\"), dict):\n        first_sentence = data[\"first_sentence\"].get(\"value\")\n    elif isinstance(data.get(\"first_sentence\"), str):\n        first_sentence = data[\"first_sentence\"]\n\n    result = {\n        \"title\": title,\n        \"description\": description,\n        \"subjects\": subjects,\n        \"first_sentence\": first_sentence,\n        \"covers\": covers\n    }\n\n    print(json.dumps(result, indent=2))\n    return result\n\n# Example usage:\n# get_work_details(\"/works/OL45883W\")\n```\n\n\u2705 **Explanation:**\n- Uses the `/works/{work_id}.json` endpoint from the Open Library Works API.  \n- Handles text or object-style `description` and `first_sentence` fields.  \n- Limits subjects to 10 and covers to 3 entries.  \n- Prints a nicely formatted JSON output for easy reading.",
+      "sender": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "mentions": [],
+      "type": "msg",
+      "time": 1762219662.90358,
+      "id": "92a2f1f7-af64-4eb4-886d-edef9fe20eb1"
+    },
+    {
+      "time": 1762219776.5967634,
+      "body": "Wrap the code above in a function get_book_details:\n\nFunction argument: work_key in this format: /works/{work_id}\nOutput: JSON string with: title, description, subjects (limit to 10), first_sentence, covers (limit to 3)\nWrite good docstring",
+      "type": "msg",
+      "id": "88e62b7e-6a02-480a-a4b1-6c5bef8eb658",
+      "sender": "324be302f5aa47239fe942d8a456b8bd",
+      "raw_time": false
+    },
+    {
+      "type": "msg",
+      "raw_time": false,
+      "body": "Here\u2019s the complete implementation of the `get_book_details` function, following your requirements:  \n\n```python\nimport requests\nimport json\n\ndef get_book_details(work_key: str) -> str:\n    \"\"\"\n    Retrieve detailed information about a book from the Open Library Works API.\n\n    This function queries the Open Library's `/works/{work_id}.json` endpoint\n    to obtain structured metadata about a specific book (or work). The returned\n    JSON string contains selected fields of interest such as the title,\n    description, subjects, first sentence, and cover image identifiers.\n\n    Parameters\n    ----------\n    work_key : str\n        The Open Library work key, in this format: \"/works/{work_id}\".\n        Example: \"/works/OL45883W\"\n\n    Returns\n    -------\n    str\n        A JSON-formatted string containing the following keys:\n        - \"title\" : str \u2014 The book\u2019s title.\n        - \"description\" : str or None \u2014 The book\u2019s description text, if available.\n        - \"subjects\" : list[str] \u2014 Up to 10 subject names (topics, genres, etc.).\n        - \"first_sentence\" : str or None \u2014 The first line of the book, if provided.\n        - \"covers\" : list[int] \u2014 Up to 3 cover image IDs associated with this work.\n\n    Raises\n    ------\n    ValueError\n        If the provided `work_key` does not start with \"/works/\".\n    requests.HTTPError\n        If the HTTP request to the Open Library API fails.\n    \"\"\"\n    # Validate work key format\n    if not work_key.startswith(\"/works/\"):\n        raise ValueError(\"Invalid work key format. Expected format: '/works/{work_id}'\")\n\n    # Build API URL\n    url = f\"https://openlibrary.org{work_key}.json\"\n\n    # Perform HTTP request\n    response = requests.get(url)\n    response.raise_for_status()\n    data = response.json()\n\n    # Extract and normalize fields\n    title = data.get(\"title\")\n    covers = data.get(\"covers\", [])[:3]\n    subjects = data.get(\"subjects\", [])[:10]\n\n    # Handle flexible description field\n    description = None\n    if isinstance(data.get(\"description\"), dict):\n        description = data[\"description\"].get(\"value\")\n    elif isinstance(data.get(\"description\"), str):\n        description = data[\"description\"]\n\n    # Handle flexible first_sentence field\n    first_sentence = None\n    if isinstance(data.get(\"first_sentence\"), dict):\n        first_sentence = data[\"first_sentence\"].get(\"value\")\n    elif isinstance(data.get(\"first_sentence\"), str):\n        first_sentence = data[\"first_sentence\"]\n\n    # Create result dictionary\n    result = {\n        \"title\": title,\n        \"description\": description,\n        \"subjects\": subjects,\n        \"first_sentence\": first_sentence,\n        \"covers\": covers\n    }\n\n    # Return result as a formatted JSON string\n    return json.dumps(result, indent=2)\n\n# Example usage:\n# print(get_book_details(\"/works/OL45883W\"))\n```  \n\n\u2705 **Summary:**\n- Follows the `/works/{work_id}` format requirement.  \n- Returns the result as a **JSON-formatted string**, ready for printing or further parsing.  \n- Validates input, handles nested field variations, and limits list sizes as specified.",
+      "id": "dc2224e4-443c-4edf-9fa9-3681e6fe31f4",
+      "time": 1762219782.387063,
+      "mentions": [],
+      "sender": "jupyter-ai-personas::jupyter_ai::JupyternautPersona"
+    }
+  ],
+  "users": {
+    "324be302f5aa47239fe942d8a456b8bd": {
+      "avatar_url": null,
+      "name": "Anonymous Dia",
+      "mention_name": "Anonymous-Dia",
+      "display_name": "Anonymous Dia",
+      "color": "var(--jp-collaborator-color3)",
+      "initials": "AD",
+      "username": "324be302f5aa47239fe942d8a456b8bd",
+      "bot": false
+    },
+    "jupyter-ai-personas::jupyter_ai::JupyternautPersona": {
+      "display_name": "Jupyternaut",
+      "username": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "avatar_url": "/api/ai/static/jupyternaut.svg",
+      "color": null,
+      "name": "Jupyternaut",
+      "initials": null,
+      "bot": true
+    }
+  },
+  "attachments": {
+    "61e5e90f-fd1a-4eb6-9a96-8c266bfec081": {
+      "value": "openlibrary_api_docs.md",
+      "type": "file"
+    },
+    "7fd549c4-1aae-4d97-b233-c3979634244b": {
+      "value": "L2 - Book Research Assistant.ipynb",
+      "cells": [
+        {
+          "id": "745b2b6f-d3bd-4353-9be9-7e517e2d7242",
+          "input_type": "raw"
+        }
+      ],
+      "type": "notebook"
+    }
+  },
+  "metadata": {
+    "id": "edc6b868-7466-47a3-9ae4-d1c58778a273"
+  }
+}
