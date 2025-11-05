@@ -1,0 +1,6 @@
+# Jupyter AI Configuration File at {USER HOME}AppData\Roaming\jupyter\jupyter_ai_config.json
+{
+  "model_provider_id": "ollama:gpt-oss:20b",
+  "api_keys": {},
+  "ollama_base_url": "http://localhost:11434"
+}

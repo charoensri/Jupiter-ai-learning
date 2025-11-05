@@ -1,0 +1,90 @@
+{
+  "messages": [
+    {
+      "time": 1762328388.7523031,
+      "sender": "489eff51b9ea4c63bc6a5f15e5cc1fd9",
+      "raw_time": false,
+      "type": "msg",
+      "attachments": [
+        "e08e249e-0810-4c57-8441-b0bce6b2daa4"
+      ],
+      "id": "34d422bb-8d28-4777-9c87-8e988b1478c6",
+      "body": "What does this code cell do? (starting with creating sentiment_category column)"
+    },
+    {
+      "type": "msg",
+      "raw_time": false,
+      "mentions": [],
+      "body": "This code cell performs **sentiment analysis and aggregation** of customer reviews based on their numeric ratings. Here\u2019s a breakdown of what each part does:\n\n---\n\n### **1. Creates a new column: `sentiment_category`**\n```python\ndf['sentiment_category'] = pd.cut(\n    df['rating'],\n    bins=[0, 2, 3, 5],\n    labels=['Negative', 'Neutral', 'Positive']\n)\n```\n- The `pd.cut()` function classifies the numeric `rating` values into **three sentiment categories**:\n  - Ratings between **0\u20132 \u2192 \"Negative\"**\n  - Ratings between **2\u20133 \u2192 \"Neutral\"**\n  - Ratings between **3\u20135 \u2192 \"Positive\"**\n- This effectively transforms the quantitative rating scale into **qualitative sentiment labels**.\n\n---\n\n### **2. Groups and aggregates data**\n```python\nanalysis = (\n    df.groupby(['product_category', 'sentiment_category'])\n      .agg(\n          rating_count=('rating', 'count'),\n          product_id_nunique=('product_id', 'nunique')\n      )\n      .reset_index()\n)\n```\n- Groups reviews by both:\n  - **Product category** (e.g., Electronics, Clothing)\n  - **Sentiment category** (Negative/Neutral/Positive)\n- Then computes:\n  - `rating_count`: number of reviews in each category-sentiment pair  \n  - `product_id_nunique`: how many **unique products** appear in that group\n\nResult: a concise summary showing how many products and reviews fall into each sentiment level, per category.\n\n---\n\n### **3. Fills missing values**\n```python\nanalysis = analysis.fillna({\n    'rating_count': 0,\n    'product_id_nunique': 0\n})\n```\n- Ensures that groups with no reviews (e.g., categories with no \u201cNeutral\u201d ratings) are represented with zeros instead of `NaN` values.\n\n---\n\n### **4. Calculates percentage of negative reviews by category**\n```python\ncategory_counts = df.groupby('product_category').size()\nnegative_counts = (\n    df[df['sentiment_category'] == 'Negative']\n    .groupby('product_category')\n    .size()\n)\nnegative_pct = (negative_counts / category_counts * 100).fillna(0)\n```\n- Computes what percentage of reviews are **negative** for each `product_category`.\n- This helps identify which product categories have the highest proportion of unhappy customers.\n\n---\n\n### **5. Prints results**\n```python\nprint(\"Review analysis by category and sentiment:\")\nprint(analysis)\nprint(\"\\nPercentage of negative reviews by category:\")\nprint(negative_pct.round(1))\n```\n- Displays:\n  - The full summary table (`analysis`)\n  - The negative review percentages rounded to one decimal place\n\n---\n\n### **In summary**\nThis code:\n- Converts numeric ratings into sentiment labels  \n- Aggregates reviews by category and sentiment  \n- Calculates negativity percentages per category  \n- Prints a clear summary of how customers feel about products in each category",
+      "id": "c811b0c3-f513-4f4f-8f5b-34776042fabc",
+      "time": 1762328389.1893282,
+      "sender": "jupyter-ai-personas::jupyter_ai::JupyternautPersona"
+    },
+    {
+      "body": "Follow the instructions in the Markdown cell to generate code (3 notebook cells) to analyze the data.",
+      "raw_time": false,
+      "attachments": [
+        "08eaa317-e7ba-4354-b9e9-cc643fd68d3f"
+      ],
+      "sender": "489eff51b9ea4c63bc6a5f15e5cc1fd9",
+      "type": "msg",
+      "time": 1762328422.6114273,
+      "id": "a426d95c-bf90-492a-9a29-0340215efc74"
+    },
+    {
+      "raw_time": false,
+      "sender": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "id": "2f7e9cc3-4b98-40b8-95e0-3215bd78624b",
+      "time": 1762328423.1468148,
+      "type": "msg",
+      "mentions": [],
+      "body": "Sure! Below are the **three notebook cells** that follow the instructions in your Markdown cell to analyze customer reviews and summarize issues.\n\n---\n\n### \ud83e\udde9 **Step 1: Extract the reviews in a list**\n\n```python\n# Step 1 \u2014 Extract the reviews in a list\n\n# Assuming we already have the DataFrame 'df' loaded \n# and it contains a column named 'review_text'.\n\n# Extract non-empty review texts into a list\ncombined_reviews = df['review_text'].dropna().tolist()\n\n# Display basic info\nprint(f\"Extracted {len(combined_reviews)} reviews.\")\n```\n\n---\n\n### \ud83e\udd16 **Step 2: Use OpenAI\u2019s GPT model to analyze common issues**\n\n```python\n# Step 2 \u2014 Analyze the reviews using OpenAI's gpt-4.1-mini model\n\nfrom openai import OpenAI\nfrom dotenv import load_dotenv\nimport os\n\n# Load the OpenAI API key\nload_dotenv()\nclient = OpenAI(api_key=os.getenv(\"OPENAI_API_KEY\"))\n\n# Combine the reviews into a single text string for analysis\ncombined_reviews_text = \"\\n\\n\".join(combined_reviews)\n\n# Define the analysis prompt\nprompt = f\"\"\"\nYou are analyzing customer reviews to identify product and service issues.\n\nBelow are customer reviews for a set of products. Please analyze them and provide:\n\n1. **Common Product Issues**: List the main problems customers reported about the product itself (quality, functionality, features, etc.)\n2. **Common Service Issues**: List the main problems customers reported about the service (shipping, customer support, packaging, etc.)\n3. **Frequency**: For each issue, estimate how often it appears \n   (e.g., \"mentioned frequently\", \"occasional complaint\", \"rare issue\")\n\nFormat your response clearly with headers and bullet points.\n\nCUSTOMER REVIEWS:\n{combined_reviews_text}\n\"\"\"\n\n# Call the GPT model to analyze reviews\nresponse = client.chat.completions.create(\n    model=\"gpt-4.1-mini\",\n    messages=[\n        {\"role\": \"system\", \"content\": \"You are a helpful data analyst.\"},\n        {\"role\": \"user\", \"content\": prompt}\n    ]\n)\n\n# Extract the model\u2019s response text\nsummary = response.choices[0].message.content\n```\n\n---\n\n### \ud83d\udcc4 **Step 3: Print and Save the summary**\n\n```python\n# Step 3 \u2014 Print and save the summary as Markdown\n\n# Print the analysis results\nprint(summary)\n\n# Save the output as a Markdown file\noutput_file = \"customer_reviews.md\"\nwith open(output_file, \"w\", encoding=\"utf-8\") as f:\n    f.write(summary)\n\nprint(f\"\\n\u2705 Summary successfully saved to '{output_file}'\")\n```\n\n---\n\nThese three cells together will:\n1. Extract all customer reviews from your DataFrame.\n2. Use OpenAI\u2019s GPT model to summarize product and service issues.\n3. Print and save the resulting analysis to a Markdown file named **`customer_reviews.md`**."
+    }
+  ],
+  "users": {
+    "489eff51b9ea4c63bc6a5f15e5cc1fd9": {
+      "name": "Anonymous Dia",
+      "color": "var(--jp-collaborator-color2)",
+      "avatar_url": null,
+      "display_name": "Anonymous Dia",
+      "initials": "AD",
+      "mention_name": "Anonymous-Dia",
+      "bot": false,
+      "username": "489eff51b9ea4c63bc6a5f15e5cc1fd9"
+    },
+    "jupyter-ai-personas::jupyter_ai::JupyternautPersona": {
+      "bot": true,
+      "username": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "avatar_url": "/api/ai/static/jupyternaut.svg",
+      "color": null,
+      "initials": null,
+      "display_name": "Jupyternaut",
+      "name": "Jupyternaut"
+    }
+  },
+  "attachments": {
+    "e08e249e-0810-4c57-8441-b0bce6b2daa4": {
+      "type": "notebook",
+      "cells": [
+        {
+          "id": "347efcf1-09d8-4bc8-a08f-7f246a39f2fb",
+          "input_type": "code"
+        }
+      ],
+      "value": "L1 - Coding with Jupyter AI.ipynb"
+    },
+    "08eaa317-e7ba-4354-b9e9-cc643fd68d3f": {
+      "value": "L1 - Coding with Jupyter AI.ipynb",
+      "cells": [
+        {
+          "input_type": "markdown",
+          "id": "78c0def3-e081-40c3-961a-2b6be4a18304"
+        }
+      ],
+      "type": "notebook"
+    }
+  },
+  "metadata": {
+    "id": "685ba8d3-96d0-4247-8f14-822a06f51da6"
+  }
+}

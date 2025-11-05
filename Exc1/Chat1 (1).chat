@@ -1,0 +1,46 @@
+{
+  "messages": [
+    {
+      "type": "msg",
+      "raw_time": false,
+      "time": 1762327369.6480803,
+      "sender": "489eff51b9ea4c63bc6a5f15e5cc1fd9",
+      "id": "cb3d19a3-1e93-43b7-b15a-9d37a383d7d6",
+      "body": "Write a code cell to print Hello World"
+    },
+    {
+      "sender": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "time": 1762327370.2849388,
+      "type": "msg",
+      "mentions": [],
+      "body": "Here\u2019s a simple Python code cell that prints \u201cHello World\u201d:\n\n```python\nprint(\"Hello World\")\n```",
+      "id": "b6efb54b-b23b-4e60-b325-638d57a45b3e",
+      "raw_time": false
+    }
+  ],
+  "users": {
+    "489eff51b9ea4c63bc6a5f15e5cc1fd9": {
+      "color": "var(--jp-collaborator-color2)",
+      "mention_name": "Anonymous-Dia",
+      "bot": false,
+      "username": "489eff51b9ea4c63bc6a5f15e5cc1fd9",
+      "initials": "AD",
+      "avatar_url": null,
+      "name": "Anonymous Dia",
+      "display_name": "Anonymous Dia"
+    },
+    "jupyter-ai-personas::jupyter_ai::JupyternautPersona": {
+      "avatar_url": "/api/ai/static/jupyternaut.svg",
+      "color": null,
+      "bot": true,
+      "name": "Jupyternaut",
+      "initials": null,
+      "username": "jupyter-ai-personas::jupyter_ai::JupyternautPersona",
+      "display_name": "Jupyternaut"
+    }
+  },
+  "attachments": {},
+  "metadata": {
+    "id": "d001c0e7-f690-4b9a-8477-d7c8274b5e5b"
+  }
+}
